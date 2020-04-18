@@ -1,7 +1,5 @@
 package StockMarketValue;
 
-import StockMarketValue.gui.DashboardTabs;
-
 import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,33 +12,22 @@ public class MyStockDashboard {
         ParaGarantiService pg = new ParaGarantiService();
 
         // StockTypes are created
-        //StockTypeObserver euroObserver = new StockTypeObserver("EURO");
-        StockTypeObserver dollarObserver = new StockTypeObserver("USD");
-        //StockTypeObserver gbpObserver = new StockTypeObserver("GBP");
-
-        // ParaGaranti Servisi update aldiginda kimleri update etsin
-
+        DollarObserverDashboard dollarObserver = new DollarObserverDashboard("USD");
         pg.add(dollarObserver);
         dollarObserver.subscribeObservable(pg);
 
-        // It will make observable to provide data once at 3 seconds.
-
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DashboardTabs.showFrame();
-            }
-        });
-
-
         Timer timer = new Timer();
+        // It will make observable to provide data once at 3 seconds.
         timer.schedule(new TimerTask() {
-
             @Override
             public void run() {
-                pg.getStockData();
+                try {
+                    Thread.sleep(5000);
+                    pg.getStockData();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 30000, 1);
+        }, 0, 15);
     }
-
 }
