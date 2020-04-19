@@ -2,11 +2,17 @@ package StockMarketValue;
 
 import StockMarketValue.Observer;
 import StockMarketValue.ParaGarantiService;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Timestamp;
 
 public class DollarObserverDashboard extends JFrame implements Observer {
 
@@ -20,12 +26,17 @@ public class DollarObserverDashboard extends JFrame implements Observer {
 
     JPanel currentValuePanel = new JPanel();
     JPanel changeRatePanel = new JPanel();
+    JPanel lineChartPanel = new JPanel();
     JPanel panel = new JPanel();
 
     JLabel currentValueLabel = new JLabel("N/A");
     JLabel changeRateLabel = new JLabel("N/A");
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
+    JFreeChart lineChart ;
     JTabbedPane tabbedPane = new JTabbedPane();
+
+
 
     private ParaGarantiService benimPG = new ParaGarantiService();
 
@@ -65,6 +76,18 @@ public class DollarObserverDashboard extends JFrame implements Observer {
         tabbedPane.addTab("Current Value", currentValuePanel);
         tabbedPane.addTab("Change Rate", changeRatePanel);
 
+        dataset.addValue( Double.parseDouble("0.00") , "Dollar" ,  new Timestamp(System.currentTimeMillis()));
+        /* Create JFreeChart*/
+        lineChart = ChartFactory.createLineChart(
+                "Change graphic of dollar", // Chart title
+                "Date", // X-Axis Label
+                "Value", // Y-Axis Label
+                dataset
+        );
+
+        lineChartPanel = new ChartPanel(lineChart);
+
+        tabbedPane.addTab("Chart", lineChartPanel);
 
         panel.setLayout(new BorderLayout());
         panel.setPreferredSize(new Dimension(500, 250));
@@ -82,7 +105,6 @@ public class DollarObserverDashboard extends JFrame implements Observer {
     }
 
     public void updateUI(String currentValue, String changeRate) {
-        this.validate();
         currentValueLabel.setText(currentValue);
         changeRateLabel.setText(changeRate);
         if (changeRate.substring(0, 4).equals("0.00")) {
@@ -93,11 +115,14 @@ public class DollarObserverDashboard extends JFrame implements Observer {
             currentValueLabel.setForeground(Color.RED);
             changeRateLabel.setForeground(Color.RED);
             changeRateLabel.setIcon(redArrow);
+            dataset.addValue(Double.parseDouble(currentValue.replace(",",".")),"Dollar", new Timestamp(System.currentTimeMillis()));
         } else {
             currentValueLabel.setForeground(Color.GREEN);
             changeRateLabel.setForeground(Color.GREEN);
             changeRateLabel.setIcon(greenArrow);
         }
+        this.validate();
+
     }
 
 }
