@@ -23,34 +23,31 @@ import java.util.Map;
 
 public class ParaGarantiService implements Observable {
 
-    private List<StockTypeObserver> stockTypeList = new ArrayList<>();
-    Map<String, String> myStocks = new HashMap<>();
+    String currentValue;
+    String changeRate;
+
+    private List<DollarObserverDashboard> stockTypeList = new ArrayList<>();
 
 
     @Override
     public void notifyStock() {
-        for (StockTypeObserver g : stockTypeList) {
+        for (DollarObserverDashboard g : stockTypeList) {
             g.update();
         }
     }
 
     @Override
-    public void add(StockTypeObserver g) {
+    public void add(DollarObserverDashboard g) {
 
         stockTypeList.add(g);
 
     }
 
     @Override
-    public void remove(StockTypeObserver g) {
+    public void remove(DollarObserverDashboard g) {
 
         stockTypeList.remove(g);
 
-    }
-
-    public void pullStockPrice(String title) {
-        // this.title = title;
-        notifyStock();
     }
 
     public void getStockData() {
@@ -91,14 +88,8 @@ public class ParaGarantiService implements Observable {
                 Element dollarData = (Element) errNodes.item(1);
                 Element gbpData = (Element) errNodes.item(3);
 
-                //myStocks.put("EURO", euroData.getElementsByTagName("LAST").item(0).getTextContent());
-                myStocks.put("USD", dollarData.getElementsByTagName("LAST").item(0).getTextContent());
-                //myStocks.put("GBP", gbpData.getElementsByTagName("LAST").item(0).getTextContent());
-
-                //System.out.println("euro " + myStocks.get("EURO"));
-                System.out.println("dollar " + myStocks.get("USD"));
-                //System.out.println("gbp " + myStocks.get("GBP"));
-
+                currentValue = dollarData.getElementsByTagName("LAST").item(0).getTextContent();
+                changeRate = dollarData.getElementsByTagName("PERNC").item(0).getTextContent();
 
                 notifyStock();
 
